@@ -13,71 +13,97 @@ const FILE = "confessions.json";
 
 /* ---------------- SAFE READ ---------------- */
 function getData() {
-    if (!fs.existsSync(FILE)) return [];
-    const data = fs.readFileSync(FILE, "utf-8");
-    return data ? JSON.parse(data) : [];
+    try {
+        if (!fs.existsSync(FILE)) {
+            fs.writeFileSync(FILE, "[]");
+            return [];
+        }
+
+        const data = fs.readFileSync(FILE, "utf-8");
+        return data ? JSON.parse(data) : [];
+    } catch (err) {
+        console.error("READ ERROR:", err);
+        return [];
+    }
 }
 
 /* ---------------- SAFE WRITE ---------------- */
 function saveData(data) {
-    fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
+    try {
+        fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
+    } catch (err) {
+        console.error("WRITE ERROR:", err);
+    }
 }
 
-/* ---------------- GET ALL ---------------- */
+/* ---------------- HOME ---------------- */
+app.get("/", (req, res) => {
+    res.send("Confession API Running 🚀");
+});
+
+/* ---------------- GET ALL CONFESSIONS ---------------- */
 app.get("/confessions", (req, res) => {
     res.json(getData());
 });
 
 /* ---------------- ADD CONFESSION ---------------- */
 app.post("/confessions", (req, res) => {
-    const data = getData();
+    try {
+        const data = getData();
 
-    const newItem = {
-        id: Date.now(),
-        text: req.body.text,
-        reactions: {
-            like: 0,
-            laugh: 0,
-            sad: 0
-        }
-    };
+        const newConfession = {
+            id: Date.now(),
+            text: req.body.text || "",
+            reactions: {
+                like: 0,
+                laugh: 0,
+                cry: 0
+            }
+        };
 
-    data.unshift(newItem);
-    saveData(data);
+        data.unshift(newConfession);
+        saveData(data);
 
-    res.json(newItem);
+        res.json(newConfession);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to save confession" });
+    }
 });
 
 /* ---------------- REACTIONS ---------------- */
 app.post("/react/:id/:type", (req, res) => {
-console.log("HIT:", req.params);
-   
- const data = getData();
+    try {
+        const data = getData();
 
-    const id = Number(req.params.id);
-    const type = req.params.type;
+        const id = Number(req.params.id);
+        const type = req.params.type;
 
-    const allowed = ["like", "laugh", "sad"];
+        const allowed = ["like", "laugh", "cry"];
 
-    data.forEach(item => {
-        if (Number(item.id) === id) {
-            if (!item.reactions) {
-                item.reactions = { like: 0, laugh: 0, sad: 0 };
+        const updated = data.map(item => {
+            if (Number(item.id) === id) {
+                if (!item.reactions) {
+                    item.reactions = { like: 0, laugh: 0, cry: 0 };
+                }
+
+                if (allowed.includes(type)) {
+                    item.reactions[type] = (item.reactions[type] || 0) + 1;
+                }
             }
+            return item;
+        });
 
-            if (allowed.includes(type)) {
-                item.reactions[type] += 1;
-            }
-        }
-    });
+        saveData(updated);
 
-    saveData(data);
-
-    res.json({ success: true });
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Reaction failed" });
+    }
 });
 
 /* ---------------- START SERVER ---------------- */
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
