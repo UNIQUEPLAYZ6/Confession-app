@@ -1,0 +1,129 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: #0f0f0f;
+    color: white;
+    padding: 15px;
+}
+
+/* TITLE */
+h1 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 15px;
+    animation: fadeDown 0.6s ease;
+}
+
+/* INPUT BOX */
+.box {
+    background: #1a1a1a;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    animation: fadeUp 0.6s ease;
+}
+
+textarea {
+    width: 100%;
+    height: 90px;
+    background: #222;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    resize: none;
+    outline: none;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: #ff4d6d;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: scale(1.02);
+}
+
+/* CONFESSION CARD */
+.card {
+    background: #1e1e1e;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    animation: fadeUp 0.4s ease;
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* REACTIONS */
+.reactions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.reactions button {
+    flex: 1;
+    background: #2c2c2c;
+    border-radius: 20px;
+    font-size: 13px;
+    padding: 6px;
+    transition: 0.2s;
+}
+
+/* CLICK ANIMATION */
+.pop {
+    animation: pop 0.25s ease;
+}
+
+.reactions button:active {
+    transform: scale(0.9);
+}
+
+/* FLOATING HEART / EMOJI */
+.emoji-float {
+    position: absolute;
+    font-size: 18px;
+    animation: floatUp 0.8s ease forwards;
+    pointer-events: none;
+}
+
+/* ANIMATIONS */
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+    100% { transform: scale(1); }
+}
+
+@keyframes floatUp {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-50px); }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
